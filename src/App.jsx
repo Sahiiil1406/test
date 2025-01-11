@@ -1,33 +1,52 @@
-import { useState } from 'react'
-import './App.css'
+import React, { useEffect, useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+    function App() {
+      const [todo, setTodo] = useState(null);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          
-        </a>
-        <a href="https://react.dev" target="_blank">
-          
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      useEffect(() => {
+        const fetchTodo = async () => {
+          try {
+            const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+            const data = await response.json();
+            setTodo(data);
+          } catch (error) {
+            console.error('Failed to fetch todo:', error);
+          }
+        };
 
-export default App
+        fetchTodo();
+      }, []);
+
+      return (
+        <div>
+          <nav style={styles.navbar} aria-label="Main Navigation">
+            <h1>DevDAO</h1>
+          </nav>
+          <main style={styles.main}>
+            {todo ? (
+              <div data-testid="todo-item">
+                <h2>Todo Item</h2>
+                <p><strong>Title:</strong> {todo.title}</p>
+                <p><strong>Completed:</strong> {todo.completed ? 'Yes' : 'No'}</p>
+              </div>
+            ) : (
+              <p>Loading...</p>
+            )}
+          </main>
+        </div>
+      );
+    }
+
+    const styles = {
+      navbar: {
+        backgroundColor: 'red',
+        padding: '1rem',
+        textAlign: 'center',
+      },
+      main: {
+        padding: '1rem',
+        fontFamily: 'Arial, sans-serif',
+      },
+    };
+
+    export default App;
