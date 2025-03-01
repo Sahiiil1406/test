@@ -1,52 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-    function App() {
-      const [todo, setTodo] = useState(null);
+function App() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
 
-      useEffect(() => {
-        const fetchTodo = async () => {
-          try {
-            const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
-            const data = await response.json();
-            setTodo(data);
-          } catch (error) {
-            console.error('Failed to fetch todo:', error);
-          }
-        };
+  const addTodo = () => {
+    if (input.trim() === '') return;
+    setTodos([...todos, { id: Date.now(), text: input }]);
+    setInput('');
+  };
 
-        fetchTodo();
-      }, []);
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
 
-      return (
-        <div>
-          <nav style={styles.navbar} aria-label="Main Navigation">
-            <h1>DevDAO</h1>
-          </nav>
-          <main style={styles.main}>
-            {todo ? (
-              <div data-testid="todo-item">
-                <h2>Todo Item</h2>
-                <p><strong>Title:</strong> {todo.title}</p>
-                <p><strong>Completed:</strong> {todo.completed ? 'Yes' : 'No'}</p>
-              </div>
-            ) : (
-              <p>Loading...</p>
-            )}
-          </main>
-        </div>
-      );
-    }
+  return (
+    <div style={styles.container}>
+      <h1>Simple To-Do App</h1>
+      <div>
+        <input 
+          type="text" 
+          value={input} 
+          onChange={(e) => setInput(e.target.value)} 
+          placeholder="Add a new task" 
+          style={styles.input}
+        />
+        <button onClick={addTodo} style={styles.button}>Add</button>
+      </div>
+      <ul style={styles.list}>
+        {todos.map(todo => (
+          <li key={todo.id} style={styles.listItem}>
+            {todo.text}
+            <button onClick={() => deleteTodo(todo.id)} style={styles.deleteButton}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-    const styles = {
-      navbar: {
-        backgroundColor: 'red',
-        padding: '1rem',
-        textAlign: 'center',
-      },
-      main: {
-        padding: '1rem',
-        fontFamily: 'Arial, sans-serif',
-      },
-    };
+const styles = {
+  container: { textAlign: 'center', fontFamily: 'Arial, sans-serif', padding: '2rem' },
+  input: { padding: '0.5rem', marginRight: '0.5rem' },
+  button: { padding: '0.5rem', backgroundColor: 'blue', color: 'white', border: 'none', cursor: 'pointer' },
+  list: { listStyleType: 'none', padding: 0 },
+  listItem: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0.5rem 0', padding: '0.5rem', border: '1px solid #ddd' },
+  deleteButton: { backgroundColor: 'red', color: 'white', border: 'none', cursor: 'pointer' }
+};
 
-    export default App;
+export default App;
